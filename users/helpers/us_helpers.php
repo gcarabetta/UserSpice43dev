@@ -569,7 +569,38 @@ if(!function_exists('securePage')) {
 
 			//Check if user's permission levels allow access to page
 			if (checkPermission($pagePermissions)){
-				return true;
+        // OSCAR Start
+				// Permissions are ok, so If requested page has VALIDITY_TIME permission, check it
+
+                        $query = $db->query("select * from permission_page_matches, permissions where permission_page_matches.permission_id = permissions.id and name = 'VALIDITY_TIME' and page_id = ?",[$pageID]);
+                        if ($query->count() > 0 ) { // VALIDITY_TIME Check needed
+
+                                $v_frm = new DateTime($user->data()->valid_from, new DateTimeZone("Europe/Rome"));
+                                $v_to = new DateTime($user->data()->valid_to, new DateTimeZone("Europe/Rome"));
+                                $adesso = new DateTime('now', new DateTimeZone("Europe/Rome"));
+
+                                if ( ( $adesso >= $v_frm ) && ( $adesso <= $v_to ) ) {
+                                        // Permessi ok - Timing OK
+                                        return true;
+                                } else {
+                                        // Permessi Ok - Timing NO
+                                        if (!$homepage = Config::get('homepage'))
+                                                $homepage = 'index.php';
+                                        $fields = array(
+                                                'user'  => $user->data()->id,
+                                                'page'  => $pageID,
+                                                'ip'            => $ip,
+                                        );
+                                        $db->insert('audit',$fields);
+                                        require_once $abs_us_root.$us_url_root.'usersc/scripts/did_not_have_time_permission.php';
+                                        Redirect::to($homepage);
+                                        return false;
+                                }
+                        } else {
+                                // Permissions OK - no VALIDITY_TIME check needed
+                                return true;
+                        } // OSCAR End
+
 			}elseif  (in_array($user->data()->id, $master_account)){ //Grant access if master user
 				return true;
 			}else {
