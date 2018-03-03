@@ -300,6 +300,17 @@ $userdetails=$user2->data();
 													 </div>
 											 </div>
 
+<!-- OSCAR: Start -->
+											 <div class="form-group">
+                           <label for="valid_from">Valid from:</label>
+                           <input class="form-control" id="valid_from" name="valid_from" type="datetime-local" value="<?=$userdetails->valid_from?>" readonly>
+											 </div>
+
+											 <div class="form-group">
+                           <label for="valid_to">Valid to:</label>
+                           <input class="form-control" id="valid_to" name="valid_to" type="datetime-local" value="<?=$userdetails->valid_to?>" readonly>
+											 </div>
+<!-- OSCAR: End -->
                         <input type="hidden" name="csrf" value="<?=Token::generate();?>" />
 
                         <p><input class='btn btn-primary' type='submit' value='Update' class='submit' /></p>

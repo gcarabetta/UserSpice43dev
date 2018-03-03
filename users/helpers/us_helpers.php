@@ -575,11 +575,11 @@ if(!function_exists('securePage')) {
                         $query = $db->query("select * from permission_page_matches, permissions where permission_page_matches.permission_id = permissions.id and name = 'VALIDITY_TIME' and page_id = ?",[$pageID]);
                         if ($query->count() > 0 ) { // VALIDITY_TIME Check needed
 
-                                $v_frm = new DateTime($user->data()->valid_from, new DateTimeZone("Europe/Rome"));
-                                $v_to = new DateTime($user->data()->valid_to, new DateTimeZone("Europe/Rome"));
-                                $adesso = new DateTime('now', new DateTimeZone("Europe/Rome"));
+                                $v_frm = new DateTime($user->data()->valid_from);
+                                $v_to = new DateTime($user->data()->valid_to);
+                                $adesso = new DateTime('now');
 
-                                if ( ( $adesso >= $v_frm ) && ( $adesso <= $v_to ) ) {
+                                if ( ( $adesso >= $v_frm ) && ( $adesso <= $v_to ) && !empty($user->data()->valid_from) && !empty($user->data()->valid_to)) {
                                         // Permessi ok - Timing OK
                                         return true;
                                 } else {
