@@ -30,7 +30,7 @@ CREATE TABLE `audit` (
   `ip` varchar(255) NOT NULL,
   `viewed` int(1) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -39,7 +39,7 @@ CREATE TABLE `audit` (
 
 LOCK TABLES `audit` WRITE;
 /*!40000 ALTER TABLE `audit` DISABLE KEYS */;
-INSERT INTO `audit` (`id`, `user`, `page`, `timestamp`, `ip`, `viewed`) VALUES (1,1,'42','2017-02-20 17:31:13','::1',0),(2,0,'44','2017-08-14 17:32:22','::1',0),(3,0,'4','2017-09-16 17:53:58','::1',0),(4,0,'4','2017-10-09 15:41:11','192.168.0.222',0),(5,0,'50','2018-02-28 16:59:10','127.0.0.1',0),(6,11,'9','2018-03-03 08:50:50','127.0.0.1',0),(7,11,'82','2018-03-03 08:52:20','127.0.0.1',0),(8,11,'82','2018-03-03 08:53:15','127.0.0.1',0),(9,11,'82','2018-03-03 09:02:36','127.0.0.1',0),(10,11,'82','2018-03-03 09:12:55','127.0.0.1',0),(11,11,'82','2018-03-03 09:22:59','127.0.0.1',0),(12,11,'82','2018-03-03 09:25:27','127.0.0.1',0),(13,11,'82','2018-03-03 09:51:30','127.0.0.1',0),(14,11,'82','2018-03-03 09:52:28','127.0.0.1',0),(15,11,'82','2018-03-03 09:56:40','127.0.0.1',0),(16,11,'82','2018-03-03 10:30:07','127.0.0.1',0),(17,11,'82','2018-03-03 11:03:50','127.0.0.1',0),(18,11,'82','2018-03-03 11:15:48','127.0.0.1',0),(19,11,'82','2018-03-03 11:16:19','127.0.0.1',0),(20,11,'82','2018-03-03 11:19:04','127.0.0.1',0),(21,11,'82','2018-03-03 11:19:44','127.0.0.1',0),(22,11,'82','2018-03-03 11:20:20','127.0.0.1',0),(23,0,'84','2018-03-03 13:58:08','127.0.0.1',0);
+INSERT INTO `audit` (`id`, `user`, `page`, `timestamp`, `ip`, `viewed`) VALUES (1,1,'42','2017-02-20 17:31:13','::1',0),(2,0,'44','2017-08-14 17:32:22','::1',0),(3,0,'4','2017-09-16 17:53:58','::1',0),(4,0,'4','2017-10-09 15:41:11','192.168.0.222',0),(5,0,'50','2018-02-28 16:59:10','127.0.0.1',0),(6,11,'9','2018-03-03 08:50:50','127.0.0.1',0),(7,11,'82','2018-03-03 08:52:20','127.0.0.1',0),(8,11,'82','2018-03-03 08:53:15','127.0.0.1',0),(9,11,'82','2018-03-03 09:02:36','127.0.0.1',0),(10,11,'82','2018-03-03 09:12:55','127.0.0.1',0),(11,11,'82','2018-03-03 09:22:59','127.0.0.1',0),(12,11,'82','2018-03-03 09:25:27','127.0.0.1',0),(13,11,'82','2018-03-03 09:51:30','127.0.0.1',0),(14,11,'82','2018-03-03 09:52:28','127.0.0.1',0),(15,11,'82','2018-03-03 09:56:40','127.0.0.1',0),(16,11,'82','2018-03-03 10:30:07','127.0.0.1',0),(17,11,'82','2018-03-03 11:03:50','127.0.0.1',0),(18,11,'82','2018-03-03 11:15:48','127.0.0.1',0),(19,11,'82','2018-03-03 11:16:19','127.0.0.1',0),(20,11,'82','2018-03-03 11:19:04','127.0.0.1',0),(21,11,'82','2018-03-03 11:19:44','127.0.0.1',0),(22,11,'82','2018-03-03 11:20:20','127.0.0.1',0),(23,0,'84','2018-03-03 13:58:08','127.0.0.1',0),(24,2,'82','2018-03-04 09:02:22','127.0.0.1',0),(25,12,'9','2018-03-04 10:06:08','127.0.0.1',0),(26,13,'9','2018-03-04 10:15:41','127.0.0.1',0),(27,14,'9','2018-03-04 10:32:58','127.0.0.1',0),(28,14,'82','2018-03-04 10:44:44','127.0.0.1',0),(29,14,'82','2018-03-04 11:09:26','127.0.0.1',0),(30,14,'82','2018-03-04 11:10:25','127.0.0.1',0),(31,14,'82','2018-03-04 11:11:01','127.0.0.1',0),(32,14,'82','2018-03-04 11:11:21','127.0.0.1',0);
 /*!40000 ALTER TABLE `audit` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -204,7 +204,7 @@ CREATE TABLE `logs` (
   `logtype` varchar(25) NOT NULL,
   `lognote` text NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=110 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=138 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -213,7 +213,7 @@ CREATE TABLE `logs` (
 
 LOCK TABLES `logs` WRITE;
 /*!40000 ALTER TABLE `logs` DISABLE KEYS */;
-INSERT INTO `logs` (`id`, `user_id`, `logdate`, `logtype`, `lognote`) VALUES (79,1,'2018-02-28 16:58:56','System Updates','Reformatted existing vericodes'),(80,1,'2018-02-28 16:58:56','System Updates','Update 3GJYaKcqUtw7 successfully deployed.'),(81,1,'2018-02-28 16:58:56','System Updates','Updated old Blacklisted logs to IP Logging type.'),(82,1,'2018-02-28 16:58:56','System Updates','Added cloaking to users.'),(83,1,'2018-02-28 16:58:56','System Updates','Update 2XQjsKYJAfn1 successfully deployed.'),(84,1,'2018-02-28 16:58:56','System Updates','Updated force_notif to 0 if you had not set it already.'),(85,1,'2018-02-28 16:58:56','System Updates','Update 549DLFeHMNw7 successfully deployed.'),(86,1,'2018-02-28 16:58:56','System Updates','Added registration to settings.'),(87,1,'2018-02-28 16:58:56','System Updates','Update 4Dgt2XVjgz2x successfully deployed.'),(88,1,'2018-02-28 16:58:56','System Updates','Added Vericode Expiry to Users Table.'),(89,1,'2018-02-28 16:58:56','System Updates','Reformatted exiting page titles only if they weren\'t modified.'),(90,1,'2018-02-28 16:58:56','System Updates','Update VLBp32gTWvEo successfully deployed.'),(91,1,'2018-02-28 16:58:56','System Updates','Update Q3KlhjdtxE5X successfully deployed.'),(92,1,'2018-02-28 16:59:58','User','User logged in.'),(93,1,'2018-02-28 17:00:57','User','Updated password.'),(94,1,'2018-02-28 17:01:20','User','User logged in.'),(95,1,'2018-03-01 15:02:59','User','User logged in.'),(96,1,'2018-03-01 15:03:12','User','User logged in.'),(97,1,'2018-03-02 14:55:11','User','User logged in.'),(98,1,'2018-03-02 14:56:19','Pages Manager','Added 1 permission(s) to pagina1.php.'),(99,1,'2018-03-03 08:42:03','User','User logged in.'),(100,1,'2018-03-03 08:49:23','Permissions Manager','Added Permission Level named VALIDITY_TIME.'),(101,1,'2018-03-03 08:49:36','Pages Manager','Added 1 permission(s) to pagina1.php.'),(102,11,'2018-03-03 08:50:50','User','User logged in.'),(103,11,'2018-03-03 08:50:50','User Manager','Added user test_C1.'),(104,1,'2018-03-03 09:58:41','User','User logged in.'),(105,1,'2018-03-03 09:58:58','Pages Manager','Added 1 permission(s) to pagina1.php.'),(106,1,'2018-03-03 10:04:46','Pages Manager','Added 1 permission(s) to users/out_timeframe.php.'),(107,11,'2018-03-03 10:05:07','User','User logged in.'),(108,1,'2018-03-03 13:54:15','User','User logged in.'),(109,11,'2018-03-03 13:54:33','User','User logged in.');
+INSERT INTO `logs` (`id`, `user_id`, `logdate`, `logtype`, `lognote`) VALUES (79,1,'2018-02-28 16:58:56','System Updates','Reformatted existing vericodes'),(80,1,'2018-02-28 16:58:56','System Updates','Update 3GJYaKcqUtw7 successfully deployed.'),(81,1,'2018-02-28 16:58:56','System Updates','Updated old Blacklisted logs to IP Logging type.'),(82,1,'2018-02-28 16:58:56','System Updates','Added cloaking to users.'),(83,1,'2018-02-28 16:58:56','System Updates','Update 2XQjsKYJAfn1 successfully deployed.'),(84,1,'2018-02-28 16:58:56','System Updates','Updated force_notif to 0 if you had not set it already.'),(85,1,'2018-02-28 16:58:56','System Updates','Update 549DLFeHMNw7 successfully deployed.'),(86,1,'2018-02-28 16:58:56','System Updates','Added registration to settings.'),(87,1,'2018-02-28 16:58:56','System Updates','Update 4Dgt2XVjgz2x successfully deployed.'),(88,1,'2018-02-28 16:58:56','System Updates','Added Vericode Expiry to Users Table.'),(89,1,'2018-02-28 16:58:56','System Updates','Reformatted exiting page titles only if they weren\'t modified.'),(90,1,'2018-02-28 16:58:56','System Updates','Update VLBp32gTWvEo successfully deployed.'),(91,1,'2018-02-28 16:58:56','System Updates','Update Q3KlhjdtxE5X successfully deployed.'),(92,1,'2018-02-28 16:59:58','User','User logged in.'),(93,1,'2018-02-28 17:00:57','User','Updated password.'),(94,1,'2018-02-28 17:01:20','User','User logged in.'),(95,1,'2018-03-01 15:02:59','User','User logged in.'),(96,1,'2018-03-01 15:03:12','User','User logged in.'),(97,1,'2018-03-02 14:55:11','User','User logged in.'),(98,1,'2018-03-02 14:56:19','Pages Manager','Added 1 permission(s) to pagina1.php.'),(99,1,'2018-03-03 08:42:03','User','User logged in.'),(100,1,'2018-03-03 08:49:23','Permissions Manager','Added Permission Level named VALIDITY_TIME.'),(101,1,'2018-03-03 08:49:36','Pages Manager','Added 1 permission(s) to pagina1.php.'),(102,11,'2018-03-03 08:50:50','User','User logged in.'),(103,11,'2018-03-03 08:50:50','User Manager','Added user test_C1.'),(104,1,'2018-03-03 09:58:41','User','User logged in.'),(105,1,'2018-03-03 09:58:58','Pages Manager','Added 1 permission(s) to pagina1.php.'),(106,1,'2018-03-03 10:04:46','Pages Manager','Added 1 permission(s) to users/out_timeframe.php.'),(107,11,'2018-03-03 10:05:07','User','User logged in.'),(108,1,'2018-03-03 13:54:15','User','User logged in.'),(109,11,'2018-03-03 13:54:33','User','User logged in.'),(110,1,'2018-03-04 07:44:07','User','User logged in.'),(111,11,'2018-03-04 08:27:00','User','User logged in.'),(112,1,'2018-03-04 08:27:45','User','User logged in.'),(113,1,'2018-03-04 09:02:03','User Manager','Updated password for Sample.'),(114,2,'2018-03-04 09:02:17','User','User logged in.'),(115,1,'2018-03-04 09:03:05','User','User logged in.'),(116,12,'2018-03-04 10:06:08','User','User logged in.'),(117,12,'2018-03-04 10:06:08','User Manager','Added user cacca.'),(118,1,'2018-03-04 10:06:28','User','User logged in.'),(119,1,'2018-03-04 10:07:26','User Manager','Deleted user named Cacca.'),(120,13,'2018-03-04 10:15:41','User','User logged in.'),(121,13,'2018-03-04 10:15:41','User Manager','Added user cacca.'),(122,1,'2018-03-04 10:15:50','User','User logged in.'),(123,1,'2018-03-04 10:27:58','User Manager','Deleted user named Cacca.'),(124,14,'2018-03-04 10:32:57','User','User logged in.'),(125,14,'2018-03-04 10:32:57','User Manager','Added user cacca.'),(126,1,'2018-03-04 10:33:06','User','User logged in.'),(127,1,'2018-03-04 10:33:46','Cloaking','cloaked into 14'),(128,1,'2018-03-04 10:33:56','Cloaking','uncloaked from 14'),(129,1,'2018-03-04 10:40:58','User Manager','Added 1 permission(s) to Cacca Cacca.'),(130,1,'2018-03-04 10:41:15','Cloaking','cloaked into 14'),(131,1,'2018-03-04 10:41:32','Cloaking','uncloaked from 14'),(132,1,'2018-03-04 10:41:50','User Manager','Deleted 1 permission(s) from Cacca Cacca.'),(133,1,'2018-03-04 10:42:13','Cloaking','cloaked into 14'),(134,14,'2018-03-04 10:42:35','User','User logged in.'),(135,1,'2018-03-04 10:43:41','User','User logged in.'),(136,14,'2018-03-04 10:44:38','User','User logged in.'),(137,1,'2018-03-04 11:19:02','User','User logged in.');
 /*!40000 ALTER TABLE `logs` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -481,7 +481,7 @@ CREATE TABLE `profiles` (
   `user_id` int(11) NOT NULL,
   `bio` text NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -490,7 +490,7 @@ CREATE TABLE `profiles` (
 
 LOCK TABLES `profiles` WRITE;
 /*!40000 ALTER TABLE `profiles` DISABLE KEYS */;
-INSERT INTO `profiles` (`id`, `user_id`, `bio`) VALUES (1,1,'<h1>This is the Admin\'s bio.</h1>'),(2,2,'This is your bio'),(11,11,'');
+INSERT INTO `profiles` (`id`, `user_id`, `bio`) VALUES (1,1,'<h1>This is the Admin\'s bio.</h1>'),(2,2,'This is your bio'),(11,11,''),(14,14,'');
 /*!40000 ALTER TABLE `profiles` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -719,7 +719,7 @@ CREATE TABLE `us_ip_list` (
 
 LOCK TABLES `us_ip_list` WRITE;
 /*!40000 ALTER TABLE `us_ip_list` DISABLE KEYS */;
-INSERT INTO `us_ip_list` (`id`, `ip`, `user_id`, `timestamp`) VALUES (1,'::1',1,'2017-10-09 15:20:03'),(2,'127.0.0.1',11,'2018-03-03 13:54:33');
+INSERT INTO `us_ip_list` (`id`, `ip`, `user_id`, `timestamp`) VALUES (1,'::1',1,'2017-10-09 15:20:03'),(2,'127.0.0.1',1,'2018-03-04 11:19:02');
 /*!40000 ALTER TABLE `us_ip_list` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -759,7 +759,7 @@ CREATE TABLE `user_permission_matches` (
   `user_id` int(11) NOT NULL,
   `permission_id` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=112 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=116 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -768,7 +768,7 @@ CREATE TABLE `user_permission_matches` (
 
 LOCK TABLES `user_permission_matches` WRITE;
 /*!40000 ALTER TABLE `user_permission_matches` DISABLE KEYS */;
-INSERT INTO `user_permission_matches` (`id`, `user_id`, `permission_id`) VALUES (100,1,1),(101,1,2),(102,2,1),(111,11,1);
+INSERT INTO `user_permission_matches` (`id`, `user_id`, `permission_id`) VALUES (100,1,1),(101,1,2),(102,2,1),(111,11,1),(114,14,1);
 /*!40000 ALTER TABLE `user_permission_matches` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -821,7 +821,7 @@ CREATE TABLE `users` (
   `valid_to` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `EMAIL` (`email`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -830,7 +830,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` (`id`, `email`, `email_new`, `username`, `password`, `fname`, `lname`, `permissions`, `logins`, `account_owner`, `account_id`, `company`, `join_date`, `last_login`, `email_verified`, `vericode`, `vericode_expiry`, `active`, `oauth_provider`, `oauth_uid`, `gender`, `locale`, `gpluslink`, `picture`, `created`, `modified`, `fb_uid`, `un_changed`, `msg_exempt`, `last_confirm`, `protected`, `dev_user`, `msg_notification`, `force_pr`, `twoKey`, `twoEnabled`, `cloak_allowed`, `valid_from`, `valid_to`) VALUES (1,'userspicephp@gmail.com',NULL,'admin','$2y$12$E2ZMbq/Dgl6ImbkxSu195..dyyj.472GgerLCZ3CEnWq96oU.rgpW','The','Admin',1,8,1,0,'UserSpice','2016-01-01 00:00:00','2018-03-03 14:54:15',1,'uEFhVkYdTFWepaI','2018-03-03 13:54:15',0,'','','','','','','0000-00-00 00:00:00','1899-11-30 00:00:00','',0,1,'2018-03-03 14:54:15',1,0,1,0,NULL,0,0,NULL,NULL),(2,'noreply@userspice.com',NULL,'user','$2y$12$HZa0/d7evKvuHO8I3U8Ff.pOjJqsGTZqlX8qURratzP./EvWetbkK','Sample','User',1,0,1,0,'none','2016-01-02 00:00:00','2017-10-08 15:47:41',1,'B9SEZIIO8uQLQUk','2018-02-28 16:58:56',1,'','','','','','','0000-00-00 00:00:00','0000-00-00 00:00:00','',0,0,NULL,0,0,1,0,NULL,0,0,NULL,NULL),(11,'C1@C1.COM',NULL,'test_C1','$2y$12$1/bq10u/5B2zWts7Fwob6u57RrSPJUjtyHVd/PrFSdy0TpTaZ2itO','C1','CQ',1,3,1,0,'','2018-03-03 09:50:49','2018-03-03 14:54:33',1,'LPznIxOkIylZoTj','2018-03-03 13:54:33',1,'','','','','','','0000-00-00 00:00:00','0000-00-00 00:00:00','',0,0,'2018-03-03 14:54:33',0,0,1,0,NULL,0,0,'2018-01-17 16:00:00','2018-03-01 10:00:00');
+INSERT INTO `users` (`id`, `email`, `email_new`, `username`, `password`, `fname`, `lname`, `permissions`, `logins`, `account_owner`, `account_id`, `company`, `join_date`, `last_login`, `email_verified`, `vericode`, `vericode_expiry`, `active`, `oauth_provider`, `oauth_uid`, `gender`, `locale`, `gpluslink`, `picture`, `created`, `modified`, `fb_uid`, `un_changed`, `msg_exempt`, `last_confirm`, `protected`, `dev_user`, `msg_notification`, `force_pr`, `twoKey`, `twoEnabled`, `cloak_allowed`, `valid_from`, `valid_to`) VALUES (1,'userspicephp@gmail.com',NULL,'admin','$2y$12$E2ZMbq/Dgl6ImbkxSu195..dyyj.472GgerLCZ3CEnWq96oU.rgpW','The','Admin',1,16,1,0,'UserSpice','2016-01-01 00:00:00','2018-03-04 12:19:02',1,'uEFhVkYdTFWepaI','2018-03-04 11:19:02',0,'','','','','','','0000-00-00 00:00:00','1899-11-30 00:00:00','',0,1,'2018-03-04 12:19:02',1,0,1,0,NULL,0,0,NULL,NULL),(2,'noreply@userspice.com',NULL,'user','$2y$12$sN7BhRk2KIW.2OghKdRRmOVAMGwUeyXO5nYKnBvBOH4Kvj6YyW2fm','Sample','User',1,1,1,0,'none','2016-01-02 00:00:00','2018-03-04 10:02:17',1,'B9SEZIIO8uQLQUk','2018-03-04 09:02:17',1,'','','','','','','0000-00-00 00:00:00','0000-00-00 00:00:00','',0,0,'2018-03-04 10:02:17',0,0,1,0,NULL,0,0,NULL,NULL),(11,'C1@C1.COM',NULL,'test_C1','$2y$12$1/bq10u/5B2zWts7Fwob6u57RrSPJUjtyHVd/PrFSdy0TpTaZ2itO','C1','CQ',1,4,1,0,'','2018-03-03 09:50:49','2018-03-04 09:27:00',1,'LPznIxOkIylZoTj','2018-03-04 08:27:00',1,'','','','','','','0000-00-00 00:00:00','0000-00-00 00:00:00','',0,0,'2018-03-04 09:27:00',0,0,1,0,NULL,0,0,'2018-01-17 16:00:00','2018-03-01 10:00:00'),(14,'ca@ca.it',NULL,'cacca','$2y$12$Rx5oP1Zfrep22kuv/UmQ7ONxprUDhxFQmmhI5XLtV87X8n1iSn1pS','Cacca','Cacca',1,3,1,0,'','2018-03-04 11:32:57','2018-03-04 11:44:38',1,'jJp41DSIiFD4ac6','2018-03-04 10:44:38',1,'','','','','','','0000-00-00 00:00:00','0000-00-00 00:00:00','',0,0,'2018-03-04 11:44:38',0,0,1,0,NULL,0,0,'2018-01-17 16:00:00','2018-03-01 10:00:00');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -848,7 +848,7 @@ CREATE TABLE `users_online` (
   `user_id` int(10) NOT NULL,
   `session` varchar(50) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -857,7 +857,7 @@ CREATE TABLE `users_online` (
 
 LOCK TABLES `users_online` WRITE;
 /*!40000 ALTER TABLE `users_online` DISABLE KEYS */;
-INSERT INTO `users_online` (`id`, `ip`, `timestamp`, `user_id`, `session`) VALUES (1,'127.0.0.1','1520085258',1,''),(3,'127.0.0.1','1520085276',11,'');
+INSERT INTO `users_online` (`id`, `ip`, `timestamp`, `user_id`, `session`) VALUES (1,'127.0.0.1','1520162475',1,''),(3,'127.0.0.1','1520152021',11,''),(4,'127.0.0.1','1520154172',2,''),(5,'127.0.0.1','1520157976',12,''),(6,'127.0.0.1','1520158541',13,''),(7,'127.0.0.1','1520162321',14,'');
 /*!40000 ALTER TABLE `users_online` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -874,7 +874,7 @@ CREATE TABLE `users_session` (
   `hash` varchar(255) NOT NULL,
   `uagent` text,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -895,4 +895,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-03-03 14:58:18
+-- Dump completed on 2018-03-05 10:22:42
