@@ -217,6 +217,53 @@ if(!empty($_POST)) {
 
     }
 
+    // Oscar: Start
+    // Update Valid From
+    if ($userdetails->valid_from != $_POST['valid_from']){
+      $valid_from = Input::get("valid_from");
+      $fields=array('valid_from'=>$valid_from);
+      $validation->check($_POST,array(
+         'valid_from' => array(
+         'display' => 'Valid From',
+         'is_datetime' => true,
+         'unique_update' => 'users,'.$userId,
+        )
+      ));
+    if($validation->passed()){
+      $db->update('users',$userId,$fields);
+      $successes[] = "Valid From Updated";
+      logger($user->data()->id,"User Manager","Updated Valid From for $userdetails->fname from $userdetails->valid_from to $valid_from.");
+    }else{
+          ?>
+            <?php if(!$validation->errors()=='') {?><div class="alert alert-danger"><?=display_errors($validation->errors());?></div><?php } ?>
+            <?php
+      }
+    }
+
+    // Update Valid To
+    if ($userdetails->valid_to != $_POST['valid_to']){
+      $valid_to = Input::get("valid_to");
+      $fields=array('valid_to'=>$valid_to);
+      $validation->check($_POST,array(
+         'valid_to' => array(
+         'display' => 'Valid To',
+         'is_datetime' => true,
+         'unique_update' => 'users,'.$userId,
+        )
+      ));
+    if($validation->passed()){
+      $db->update('users',$userId,$fields);
+      $successes[] = "Valid To Updated";
+      logger($user->data()->id,"User Manager","Updated Valid To for $userdetails->fname from $userdetails->valid_to to $valid_to.");
+    }else{
+          ?>
+            <?php if(!$validation->errors()=='') {?><div class="alert alert-danger"><?=display_errors($validation->errors());?></div><?php } ?>
+            <?php
+      }
+    }
+
+    // Oscar: end
+
     //Update validation
     if($act==1) {
       $email_verified = Input::get("email_verified");
@@ -517,7 +564,15 @@ else $protectedprof = 0;
         <h4 class="modal-title">Misc Settings</h4>
       </div>
       <div class="modal-body">
-                  <div class="form-group">
+                <div class="form-group">
+                <?php // Oscar: Start ?>
+                <label>Valid From:
+                <input class="form-control" type="datetime-local" name="valid_from" id="valid_from"
+                value="<?=$userdetails->valid_from?>" /></label> <br />
+                <label>Valid To:
+                <input class="form-control" type="datetime-local" name="valid_to" id="valid_to"
+                value="<?=$userdetails->valid_to?>" /></label> <br />
+                <?php // Oscar: End ?>
 
                 <?php if($settings->twofa==1 && $userdetails->twoEnabled==1) {?>
                 <label>Disable 2FA?
