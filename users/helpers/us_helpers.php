@@ -570,26 +570,23 @@ if(!function_exists('securePage')) {
 			//Check if user's permission levels allow access to page
 			if (checkPermission($pagePermissions)){
         // OSCAR Start
-				// Permissions are ok, so If requested page has VALIDITY_TIME permission, check it
+        // Permissions are ok, so If requested page has VALIDITY_TIME permission, check it
 
         $valtimeperm = permissionNameExists("VALIDITY_TIME");
         $query = $db->query("SELECT id FROM permission_page_matches WHERE permission_id = ? AND page_id = ?",array($valtimeperm[0]->id,$pageID));
 
         if ($query->count() > 0 ) { // VALIDITY_TIME Check needed
-
-					// User has VALIDITY_TIME permission?
-	        $query = $db->query("SELECT id FROM user_permission_matches WHERE permission_id = ? AND user_id = ?",array($valtimeperm[0]->id,$user->data()->id));
-					//if ($query->count() > 0 ) { // VALIDITY_TIME Check needed
-					//file_put_contents('php://stderr', "\nsql=$sql1\n");
+          // User has VALIDITY_TIME permission?
+          $query = $db->query("SELECT id FROM user_permission_matches WHERE permission_id = ? AND user_id = ?",array($valtimeperm[0]->id,$user->data()->id));
 
           $v_frm = new DateTime($user->data()->valid_from);
           $v_to = new DateTime($user->data()->valid_to);
           $adesso = new DateTime('now');
 
           if ( ( $adesso >= $v_frm ) && ( $adesso <= $v_to ) &&  // valid timeframe
-					     !empty($user->data()->valid_from) && !empty($user->data()->valid_to) && // valid dates
-							 ($query->count() > 0) ) // user has VALIDITY_TIME permission set.
-					{
+               !empty($user->data()->valid_from) && !empty($user->data()->valid_to) && // valid dates
+               ($query->count() > 0) ) // user has VALIDITY_TIME permission set.
+          {
           	// Permessi ok - Timing OK
             return true;
           } else {
