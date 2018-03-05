@@ -572,42 +572,44 @@ if(!function_exists('securePage')) {
         // OSCAR Start
 				// Permissions are ok, so If requested page has VALIDITY_TIME permission, check it
 
-                        $resmio = permissionNameExists("VALIDITY_TIME");
-												$resmio1[] = $resmio;
-												print_r($resmio1);
-												file_put_contents('php://stderr', "\nresmio -> ".$resmio1[0]->id."\n");
+        $valtimeperm = permissionNameExists("VALIDITY_TIME");
+        $query = $db->query("SELECT id FROM permission_page_matches WHERE permission_id = ? AND page_id = ?",array($valtimeperm[0]->id,$pageID));
 
-                        $query = $db->query("select * from permission_page_matches, permissions where permission_page_matches.permission_id = permissions.id and name = 'VALIDITY_TIME' and page_id = ?",[$pageID]);
-                        if ($query->count() > 0 ) { // VALIDITY_TIME Check needed
+        if ($query->count() > 0 ) { // VALIDITY_TIME Check needed
 
-													// User has VALIDITY_TIME permission?
-													$query = $db->query("select * from permission_page_matches, permissions where permission_page_matches.permission_id = permissions.id and name = 'VALIDITY_TIME' and page_id = ?",[$pageID]);
+					// User has VALIDITY_TIME permission?
+	        $query = $db->query("SELECT id FROM user_permission_matches WHERE permission_id = ? AND user_id = ?",array($valtimeperm[0]->id,$user->data()->id));
+					//if ($query->count() > 0 ) { // VALIDITY_TIME Check needed
+					//file_put_contents('php://stderr', "\nsql=$sql1\n");
 
-                                $v_frm = new DateTime($user->data()->valid_from);
-                                $v_to = new DateTime($user->data()->valid_to);
-                                $adesso = new DateTime('now');
+          $v_frm = new DateTime($user->data()->valid_from);
+          $v_to = new DateTime($user->data()->valid_to);
+          $adesso = new DateTime('now');
 
-                                if ( ( $adesso >= $v_frm ) && ( $adesso <= $v_to ) && !empty($user->data()->valid_from) && !empty($user->data()->valid_to)) {
-                                        // Permessi ok - Timing OK
-                                        return true;
-                                } else {
-                                        // Permessi Ok - Timing NO
-                                        if (!$homepage = Config::get('homepage'))
-                                                $homepage = 'index.php';
-                                        $fields = array(
-                                                'user'  => $user->data()->id,
-                                                'page'  => $pageID,
-                                                'ip'            => $ip,
-                                        );
-                                        $db->insert('audit',$fields);
-                                        require_once $abs_us_root.$us_url_root.'usersc/scripts/did_not_have_time_permission.php';
-                                        Redirect::to($homepage);
-                                        return false;
-                                }
-                        } else {
-                                // Permissions OK - no VALIDITY_TIME check needed
-                                return true;
-                        } // OSCAR End
+          if ( ( $adesso >= $v_frm ) && ( $adesso <= $v_to ) &&  // valid timeframe
+					     !empty($user->data()->valid_from) && !empty($user->data()->valid_to) && // valid dates
+							 ($query->count() > 0) ) // user has VALIDITY_TIME permission set.
+					{
+          	// Permessi ok - Timing OK
+            return true;
+          } else {
+            // Permessi Ok - Timing NO
+            if (!$homepage = Config::get('homepage')) $homepage = 'index.php';
+
+            $fields = array(
+            	'user'  => $user->data()->id,
+              'page'  => $pageID,
+              'ip'    => $ip,
+            );
+            $db->insert('audit',$fields);
+            require_once $abs_us_root.$us_url_root.'usersc/scripts/did_not_have_time_permission.php';
+            Redirect::to($homepage);
+            return false;
+          }
+        } else {
+          // Permissions OK - no VALIDITY_TIME check needed
+          return true;
+        } // OSCAR End
 
 			}elseif  (in_array($user->data()->id, $master_account)){ //Grant access if master user
 				return true;
@@ -751,6 +753,7 @@ if(!function_exists('permissionNameExists')) {
 		$query = $db->query("SELECT id FROM permissions WHERE
 			name = ?",array($permission));
 		$results = $query->results();
+		return ($results);
 	}
 }
 

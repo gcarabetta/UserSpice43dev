@@ -29,7 +29,7 @@ require_once $abs_us_root.$us_url_root.'users/includes/navigation.php';
 
 <!-- Place any per-page javascript here -->
 <script>
-setTimeout('window.location.reload();', 30000);
+// setTimeout('window.location.reload();', 30000);
 </script>
 
 <?php require_once $abs_us_root.$us_url_root.'users/includes/html_footer.php'; // currently just the closing /body and /html ?>
