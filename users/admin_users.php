@@ -72,7 +72,7 @@ if (!empty($_POST)) {
     $lname = Input::get('lname');
     $email = Input::get('email');
     $valid_from = Input::get('valid_from');
-	  $valid_to = Input::get('valid_to');
+    $valid_to = Input::get('valid_to');
     if($settings->auto_assign_un==1) {
       $preusername = $fname[0];
       $preusername .= $lname;
