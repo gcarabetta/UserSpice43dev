@@ -572,8 +572,16 @@ if(!function_exists('securePage')) {
         // OSCAR Start
 				// Permissions are ok, so If requested page has VALIDITY_TIME permission, check it
 
+                        $resmio = permissionNameExists("VALIDITY_TIME");
+												$resmio1[] = $resmio;
+												print_r($resmio1);
+												file_put_contents('php://stderr', "\nresmio -> ".$resmio1[0]->id."\n");
+
                         $query = $db->query("select * from permission_page_matches, permissions where permission_page_matches.permission_id = permissions.id and name = 'VALIDITY_TIME' and page_id = ?",[$pageID]);
                         if ($query->count() > 0 ) { // VALIDITY_TIME Check needed
+
+													// User has VALIDITY_TIME permission?
+													$query = $db->query("select * from permission_page_matches, permissions where permission_page_matches.permission_id = permissions.id and name = 'VALIDITY_TIME' and page_id = ?",[$pageID]);
 
                                 $v_frm = new DateTime($user->data()->valid_from);
                                 $v_to = new DateTime($user->data()->valid_to);

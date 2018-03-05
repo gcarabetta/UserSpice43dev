@@ -71,6 +71,8 @@ if (!empty($_POST)) {
     $fname = Input::get('fname');
     $lname = Input::get('lname');
     $email = Input::get('email');
+    $valid_from = Input::get('valid_from');
+	  $valid_to = Input::get('valid_to');
     if($settings->auto_assign_un==1) {
       $preusername = $fname[0];
       $preusername .= $lname;
@@ -142,6 +144,16 @@ if (!empty($_POST)) {
             'required' => true,
             'matches' => 'password',
           ),
+          // Oscar: Start
+          'valid_from' => array(
+            'display' => 'Valid From',
+            'is_datetime' => true,
+          ),
+          'valid_to' => array(
+            'display' => 'Valid To',
+            'is_datetime' => true,
+          ),
+          // Oscar: End
         )); }
         if($settings->auto_assign_un==1) {
           $validation->check($_POST,array(
@@ -195,6 +207,8 @@ if (!empty($_POST)) {
               'active' => 1,
               'vericode' => randomstring(15),
               'force_pr' => $settings->force_pr,
+              'valid_from' => Input::get('valid_from'),
+	            'valid_to' => Input::get('valid_to'),
             );
             $db->insert('users',$fields);
             $theNewId=$db->lastId();
@@ -264,7 +278,12 @@ if (!empty($_POST)) {
                       <thead>
                         <tr>
                           <th></th><th></th><th>Username</th><th>Name</th><th>Email</th>
-                          <th>Last Sign In</th><?php if($act==1) {?><th>Verified</th><?php } ?><th>Status</th>
+                          <th>Last Sign In</th>
+                          <?php // Oscar: Start ?>
+                          <th>Valid From</th>
+                          <th>Valid To</th>
+                          <?php // Oscar: End ?>
+                          <?php if($act==1) {?><th>Verified</th><?php } ?><th>Status</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -284,6 +303,10 @@ if (!empty($_POST)) {
                                 echo "<i class='glyphicon glyphicon-ok'></i>";
                               } ?>
                             </td><?php } ?>
+                            <?php // Oscar: Start ?>
+                            <td><?=$v1->valid_from?></td>
+                            <td><?=$v1->valid_to?></td>
+                            <?php // Oscar: End ?>
                             <td><i class="fa fa-fw fa-<?php if($v1->permissions==1) {?>un<?php } ?>lock"></i></td>
                           </tr>
                         <?php } ?>
@@ -324,6 +347,20 @@ if (!empty($_POST)) {
                               <span class="input-group-addon" id="addon2"><a class="nounderline pwpopover" data-container="body" data-toggle="popover" data-placement="top" data-content="The Administrator has manual creation password resets enabled. If you choose to send an email to this user, it will supply them with the password reset link and let them know they have an account. If you choose to not, you should manually supply them with this password (discouraged).">Why can't I edit this?</a></span>
                             <?php } ?>
                           </div>
+                          <?php // Oscar: Start ?>
+                          <label>Valid From: </label>
+                          <input class="form-control" type="datetime-local" name="valid_from" id="valid_from" placeholder="Valid From"
+                            value="<?php
+                              if (!$form_valid && !empty($_POST)){ echo $valid_from; }
+                              else { $xpc = new DateTime('tomorrow 16:00');
+                                  echo $xpc->format('Y-m-d H:i:s'); } ?>" required >
+                          <label>Valid To: </label>
+                          <input class="form-control" type="datetime-local" name="valid_to" id="valid_to" placeholder="Valid To"
+                            value="<?php
+                              if (!$form_valid && !empty($_POST)){ echo $valid_to; }
+                              else { $xpc = new DateTime('+2 days 10:00');
+                                  echo $xpc->format('Y-m-d H:i:s'); } ?>" required >
+                          <?php // Oscar: End ?>
                           <label><input type="checkbox" name="sendEmail" id="sendEmail" checked /> Send Email?</label>
                           <br />
                         </div>

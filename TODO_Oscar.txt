@@ -1,0 +1,17 @@
+- aggiungi colonne in visualizza utenti;
+- in visualizza utenti, gli utenti senza il permission validity_time dovrebbero aver il valore "NA"
+- aggiungi campi x modifica in "misc settings".
+- cancellazione utente: vengono rimossi anche i relativi permessi?
+    Penso di si, perché rientra nella casistica generale...
+
+
+- tutte le modifiche dovrebbero essere legate ad un settings generale: se vuoi il validity_time attivo tutto, altrimenti no.
+- definire default nella creazione utente (ora è: from tomorrow 16:00/to tomorrow+1 10:00)
+
+
+REGOLE:
+- admin accede sempre, anche senza validit_time permission e senza date from/to;
+- la pagina segue la regola dell'accesso temporalizzato se ha permesso "VALIDITY_TIME"
+- l'utente può accedere ad una pagina con permesso "VALIDITY_TIME" solo se:
+  . ha anche lui il permesso "VALIDITY_TIME";
+  . il momento in cui cerca di accedere è "dentro" la finestra temporale a lui associata.
