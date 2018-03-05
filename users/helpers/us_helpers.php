@@ -594,7 +594,7 @@ if(!function_exists('securePage')) {
             if (!$homepage = Config::get('homepage')) $homepage = 'index.php';
 
             $fields = array(
-            	'user'  => $user->data()->id,
+              'user'  => $user->data()->id,
               'page'  => $pageID,
               'ip'    => $ip,
             );
