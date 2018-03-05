@@ -208,7 +208,7 @@ if (!empty($_POST)) {
               'vericode' => randomstring(15),
               'force_pr' => $settings->force_pr,
               'valid_from' => Input::get('valid_from'),
-	            'valid_to' => Input::get('valid_to'),
+              'valid_to' => Input::get('valid_to'),
             );
             $db->insert('users',$fields);
             $theNewId=$db->lastId();
