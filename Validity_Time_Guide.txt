@@ -1,0 +1,24 @@
+1. Scope
+
+The "Validity_Time" feature allows access to some pages (marked by the "VALIDITY_TIME" permission)
+only to some users (marked by the "VALIDITY_TIME" permission) in their specific timeframe (defined as valid_from / valid_to).
+The user can view their timeframe but cannot change it.
+Only Admin can change the user's timeframe.
+A user that is filtered out by Validity_Time get a specific error.
+Admin is not affected by the Validity_Time filter.
+
+2. Install
+
+Explode the .tgz archive: it will replace existing files by overwriting them (!!!)
+
+Exec the .sql: il will add two columns on users table (valid_from / valid_to) and add "VALIDITY_TIME" permission.
+
+Select a page to protect (or create it) as Private page.
+Associate it to permission "VALIDITY_TIME" from web menu, as usual.
+
+Select a non-admin user (or create it).
+Associate it to "VALIDITY_TIME" permission.
+Define for it a timeframe (valid from / valid to):
+you (admin) can do it in creation form, or modifying it under "Misc settings".
+
+Et voilà.
