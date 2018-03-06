@@ -7,6 +7,7 @@ Only Admin can change the user's timeframe.
 A user that is filtered out by Validity_Time get a specific error.
 Admin is not affected by the Validity_Time filter.
 
+
 2. Install
 
 Explode the .tgz archive: it will replace existing files by overwriting them (!!!)
@@ -22,3 +23,18 @@ Define for it a timeframe (valid from / valid to):
 you (admin) can do it in creation form, or modifying it under "Misc settings".
 
 Et voilà.
+
+
+3. Files description
+
+In all existing files I isolated my additions with a "marker" like "Oscar: start" and "Oscar: End", so, if you like you can find very quickly all of it.
+
+New files:
+- usersc/scripts/did_not_have_time_permission.php = script called if user out of its timeframe. Now it call the file users/out_timeframe.php
+- users/out_timeframe.php = error page specific from validity_time.
+
+Files modified:
+- users/admin_user.php = valid_from/valid_to fields added to form.
+- users/admin_users.php = valid_from/valid_to fields added to form with default values suggested.
+- users/helpers/us_helpers.php = validity_time check. Correction on permissionNameExists function.
+- users/user_settings.php = show valid_from/valid_to in users list.
