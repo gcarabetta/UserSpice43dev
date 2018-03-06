@@ -71,8 +71,8 @@ if (!empty($_POST)) {
     $fname = Input::get('fname');
     $lname = Input::get('lname');
     $email = Input::get('email');
-    $valid_from = Input::get('valid_from');
-    $valid_to = Input::get('valid_to');
+    $valid_from = Input::get('valid_from'); // Oscar: Start
+    $valid_to = Input::get('valid_to');     // Oscar: End
     if($settings->auto_assign_un==1) {
       $preusername = $fname[0];
       $preusername .= $lname;
@@ -207,8 +207,8 @@ if (!empty($_POST)) {
               'active' => 1,
               'vericode' => randomstring(15),
               'force_pr' => $settings->force_pr,
-              'valid_from' => Input::get('valid_from'),
-              'valid_to' => Input::get('valid_to'),
+              'valid_from' => Input::get('valid_from'), // Oscar: Start
+              'valid_to' => Input::get('valid_to'),     // Oscar: End
             );
             $db->insert('users',$fields);
             $theNewId=$db->lastId();
