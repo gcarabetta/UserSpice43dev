@@ -750,7 +750,7 @@ if(!function_exists('permissionNameExists')) {
 		$query = $db->query("SELECT id FROM permissions WHERE
 			name = ?",array($permission));
 		$results = $query->results();
-		return ($results);
+		return ($results); // Oscar
 	}
 }
 

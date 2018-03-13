@@ -7,6 +7,7 @@
 
 - tutte le modifiche dovrebbero essere legate ad un settings generale: se vuoi il validity_time attivo tutto, altrimenti no.
 - definire default nella creazione utente (ora è: from tomorrow 16:00/to tomorrow+1 10:00)
+- nei setting definire il nome della permission che si vuole utilizzare. Viene proposto di default "VALIDITY_TIME" ma puoi cambiarlo
 
 
 REGOLE:
