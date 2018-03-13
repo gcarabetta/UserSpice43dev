@@ -18,7 +18,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 ?>
-<?php require_once 'init.php'; ?>
+<?php require_once '../users/init.php'; ?>
 <?php require_once $abs_us_root.$us_url_root.'users/includes/header.php'; ?>
 <?php require_once $abs_us_root.$us_url_root.'users/includes/navigation.php'; ?>
 
@@ -32,9 +32,9 @@ if(!empty($_POST['uncloak'])){
 		$_SESSION['user'] = $_SESSION['cloak_from'];
 		unset($_SESSION['cloak_from']);
 		logger($from,"Cloaking","uncloaked from ".$to);
-		Redirect::to('admin_users.php?err=You+are+now+you!');
+		Redirect::to($us_url_root.'users/admin_users.php?err=You+are+now+you!');
 		}else{
-			Redirect::to('logout.php?err=Something+went+wrong.+Please+login+again');
+			Redirect::to($us_url_root.'users/logout.php?err=Something+went+wrong.+Please+login+again');
 		}
 }
 
