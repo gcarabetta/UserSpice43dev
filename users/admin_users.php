@@ -208,12 +208,9 @@ if (!empty($_POST)) {
               'active' => 1,
               'vericode' => randomstring(15),
               'force_pr' => $settings->force_pr,
-<<<<<<< HEAD
               'valid_from' => Input::get('valid_from'),
               'valid_to' => Input::get('valid_to'),
-=======
               'vericode_expiry' => $vericode_expiry
->>>>>>> upstream/master
             );
             $db->insert('users',$fields);
             $theNewId=$db->lastId();
