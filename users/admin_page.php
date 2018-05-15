@@ -27,6 +27,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 $pageId = Input::get('id');
 $errors = [];
 $successes = [];
+$new = Input::get('new');
+if($new=='yes') {
+   $_SESSION['redirect_after_save']=true;
+   $_SESSION['redirect_after_uri']=Input::get('dest');
+ }
+
 
 //Check if selected pages exist
 if(!pageIdExists($pageId)){
@@ -72,7 +78,7 @@ if(Input::exists()){
 
 
   //Toggle reauth setting
-  if($pageDetails->private==1 && $pageDetails->page != "users/admin_verify.php" && $pageDetails->page != "usersc/admin_verify.php") {
+  if($pageDetails->private==1 && $pageDetails->page != "users/admin_verify.php" && $pageDetails->page != "usersc/admin_verify.php" && $pageDetails->page != "users/admin_pin.php" && $pageDetails->page != "usersc/admin_pin.php") {
 	if (isset($re_auth) AND $re_auth == 'Yes'){
 		if ($pageDetails->re_auth == 0){
 			if (updateReAuth($pageId, 1)){
@@ -128,6 +134,14 @@ if(Input::exists()){
 		}
 	}
 	$pageDetails = fetchPageDetails($pageId);
+  if(isset($_SESSION['redirect_after_save']) && $_SESSION['redirect_after_save']==true) {
+    if(!empty($_SESSION['redirect_after_uri'])){
+        $redirect_uri=$_SESSION['redirect_after_uri'];
+        unset($_SESSION['redirect_after_save']);
+        unset($_SESSION['redirect_after_uri']);
+        Redirect::to(htmlspecialchars_decode($redirect_uri));
+    }
+  }
 }
 $pagePermissions = fetchPagePermissions($pageId);
 $permissionData = fetchAllPermissions();
@@ -179,7 +193,7 @@ $countCountQ = $countQ->count();
 						$checked = ($pageDetails->private == 1)? ' checked' : ''; ?>
 						<input type='checkbox' name='private' id='private' value='Yes'<?=$checked;?>>
 						</label></div>
-            <?php if($pageDetails->private==1 && $pageDetails->page != "users/admin_verify.php" && $pageDetails->page != "usersc/admin_verify.php") {?>
+            <?php if($pageDetails->private==1 && $pageDetails->page != "users/admin_verify.php" && $pageDetails->page != "usersc/admin_verify.php" && $pageDetails->page != "users/admin_pin.php" && $pageDetails->page != "usersc/admin_pin.php") {?>
             <label>Require ReAuth:
 						<?php
 						$checked1 = ($pageDetails->re_auth == 1)? ' checked' : ''; ?>

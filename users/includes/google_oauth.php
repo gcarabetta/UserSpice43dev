@@ -76,7 +76,7 @@ if($settings->glogin==1 && !$user->isLoggedIn()){
 						));
 					}
 				}
-				$gUser->checkUser('google',$userProfile['id'],$userProfile['given_name'],$userProfile['family_name'],$userProfile['email'],$gender,$userProfile['locale'],$link,$userProfile['picture']);
+				$feusr=$gUser->checkUser('google',$userProfile['id'],$userProfile['given_name'],$userProfile['family_name'],$userProfile['email'],$gender,$userProfile['locale'],$link,$userProfile['picture']);
 				//Add UserSpice info to session
 				$_SESSION["user"]=$feusr->id;
 				//Add Google info to the session
@@ -84,6 +84,13 @@ if($settings->glogin==1 && !$user->isLoggedIn()){
 
 				$_SESSION['token'] = $gClient->getAccessToken();
 
+				$twoQ = $db->query("select twoKey from users where id = ? and twoEnabled = 1",[$feusr->id]);
+				if($twoQ->count()>0) {
+					$_SESSION['twofa']=1;
+						$page=encodeURIComponent(Input::get('redirect'));
+						logger($user->data()->id,"Two FA","Two FA being requested.");
+						Redirect::To($us_url_root.'users/twofa.php');
+					}
 
 			} else {
 				$authUrl = $gClient->createAuthUrl();
