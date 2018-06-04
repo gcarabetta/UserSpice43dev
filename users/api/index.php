@@ -37,7 +37,7 @@ if($loggedIn===true) {
               if($twoVal){
                   $responseAr['2FAValidated'] = true;
                   if($twoO->twoEnabled == 0){
-                      $db->query("update users set twoEnabled = 1 where id = ?", [$currentUser->id]);
+                      $db->query("update users set twoEnabled = 1,twoDate=NOW() where id = ?", [$currentUser->id]);
                       logger($currentUser->id,"Two FA","Enabled Two FA");
                   }
               }else{
@@ -47,6 +47,12 @@ if($loggedIn===true) {
               returnError('Invalid user or not logged in.');
           }
           break;
+      case "checkSessionStatus":
+        if(!storeUser(TRUE)) {
+          logger($currentUser->id,"User Tracker","Logged User out due to expired session");
+          returnError('Logout');
+        }
+      break;
       default:
           returnError('Invalid API action specified.');
           break;

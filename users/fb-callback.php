@@ -125,6 +125,14 @@ $fields=array('fb_uid'=>$fbuser['id'], 'logins'=>$newLoginCount, 'last_login'=>$
 $db->update('users',$checkExisting->id,$fields);
 $_SESSION["user"] = $checkExisting->id;
 
+$twoQ = $db->query("select twoKey from users where id = ? and twoEnabled = 1",[$checkExisting->id]);
+if($twoQ->count()>0) {
+  $_SESSION['twofa']=1;
+    $page=encodeURIComponent(Input::get('redirect'));
+    logger($user->data()->id,"Two FA","Two FA being requested.");
+    Redirect::To($us_url_root.'users/twofa.php');
+  }
+
 Redirect::to($us_url_root.'users/account.php');
 }else{
   if($settings->registration==0) {
@@ -134,10 +142,10 @@ Redirect::to($us_url_root.'users/account.php');
   } else {
     // //No Existing UserSpice User Found
     // if ($CEQCount<0){
-    $fbpassword = password_hash(Token::generate(),PASSWORD_BCRYPT,array('cost' => 12));
+    //$fbpassword = password_hash(Token::generate(),PASSWORD_BCRYPT,array('cost' => 12));
     $date = date("Y-m-d H:i:s");
     $fbname = $fbuser['name'];
-    $fields=array('email'=>$fbEmail,'username'=>$fbEmail,'fname'=>$fbname,'lname'=>'','permissions'=>1,'logins'=>1,'company'=>'none','join_date'=>$date,'last_login'=>$date,'email_verified'=>1,'password'=>$fbpassword,'fb_uid'=>$fbuser['id']);
+    $fields=array('email'=>$fbEmail,'username'=>$fbEmail,'fname'=>$fbname,'lname'=>'','permissions'=>1,'logins'=>1,'company'=>'none','join_date'=>$date,'last_login'=>$date,'email_verified'=>1,'password'=>NULL,'fb_uid'=>$fbuser['id']);
 
     $db->insert('users',$fields);
     $lastID = $db->lastId();

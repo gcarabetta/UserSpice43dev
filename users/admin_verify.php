@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <?php
 $lang = array_merge($lang,array(
     "ADMIN_VERIFY_NOREF"        => "There is no referrer, you cannot verify yourself. Please return to the Dashboard.",
-    "INCORRECT_ADMINPW"         => "Incorrect password. Administrator Verification Failed!"
+    "INCORRECT_ADMINPW"         => "Incorrect credential, please try again",
     ));
 $errors = $successes = [];
 $form_valid=TRUE;
@@ -58,7 +58,7 @@ if (!empty($_POST)) {
     $password=Input::get('password');
     $actual_link = Input::get('verify_uri');
     $page = Input::get('verify_page');
-    if (password_verify($password,$user->data()->password)) {
+    if (password_verify($password,$user->data()->password) || password_verify($password,$user->data()->pin)) {
       $_SESSION['last_confirm']=date("Y-m-d H:i:s");
       logger($user->data()->id,"Admin Verification","Access granted to $page via password verification.");
       unset($_SESSION['reauth_count']);
@@ -88,14 +88,15 @@ if (!empty($_POST)) {
 <?=resultBlock($errors,$successes);?>
 <? if ($actual_link !='') { ?>
         <div class="col-xs-12 col-md-6">
-        <h1>Password Verification</h1>
+        <h1>Restricted Access</h1>
+        <p><font color='slate'>Please enter your <strong>password</strong> or <strong>PIN</strong> code below to continue</font></p>
       </div>
 
      </div>
     <div class="row">
     <form class="verify-admin" action="admin_verify.php" method="POST" id="payment-form">
     <div class="col-md-5">
-    <div class="input-group"><input class="form-control" type="password" name="password" id="password" placeholder="Please enter your password..." required autofocus>
+    <div class="input-group"><input class="form-control" type="password" name="password" id="password" required autofocus>
         <span class="input-group-btn">
         <input class='btn btn-primary' type='submit' name='verifyAdmin' value='Verify' />
       </span></div>

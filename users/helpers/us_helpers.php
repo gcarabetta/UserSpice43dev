@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // UserSpice Specific Functions
 require_once $abs_us_root.$us_url_root.'usersc/includes/custom_functions.php';
 require_once $abs_us_root.$us_url_root.'usersc/includes/analytics.php';
+$user_agent = $_SERVER['HTTP_USER_AGENT'];
 
 if(!function_exists('testUS')) {
 	function testUS(){
@@ -158,17 +159,20 @@ if(!function_exists('usernameExists')) {
 
 //Retrieve information for all users
 if(!function_exists('fetchAllUsers')) {
-	function fetchAllUsers($orderBy=[], $desc=[]) {
+	function fetchAllUsers($orderBy=[], $desc=[], $disabled=true) {
 		$db = DB::getInstance();
+		$q = "SELECT * FROM users";
+		if(!$disabled) {
+			$q.=" WHERE permissions=1";
+		}
 		if(!empty($orderBy)){
 			if ($desc === TRUE){
-				$query = $db->query("SELECT * FROM users ORDER BY $orderBy DESC");
+				$q.= " ORDER BY $orderBy DESC";
 			}else{
-				$query = $db->query("SELECT * FROM users ORDER BY $orderBy");
+				$q.= " ORDER BY $orderBy";
 			}
-		}else{
-			$query = $db->query("SELECT * FROM users");
 		}
+		$query = $db->query($q);
 		$results = $query->results();
 		return ($results);
 	}
@@ -526,7 +530,7 @@ if(!function_exists('securePage')) {
 		$query = $db->query("SELECT id, page, private FROM pages WHERE page = ?",[$page]);
 		$count = $query->count();
 		if ($count==0){
-			if(hasPerm([2],$user->data()->id)){
+			if(hasPerm([2])){
 				$setting = $db->query("SELECT page_default_private FROM settings")->first();
 				$fields = array(
 					'page'		=> $page,
@@ -534,7 +538,25 @@ if(!function_exists('securePage')) {
 				);
 				$new = $db->insert('pages',$fields);
 				$last = $db->lastId();
-				Redirect::to($us_url_root.'users/admin_page.php?err=Please+confirm+permission+settings.&new=yes&id='.$last);
+				//dnd($page);
+				if(strpos($page,'usersc/')!==false) {
+					//dnd(str_replace('usersc/','users/',$page));
+					$q=$db->query("SELECT * FROM pages WHERE page = ?",[str_replace('usersc/','users/',$page)]);
+					if($q->count()==1) {
+						$result=$q->first();
+						$db->update('pages',$last,['title' => $result->title,'private' => $result->private,'re_auth' => $result->re_auth]);
+						if(!$db->error()) logger($user->data()->id,"securePage","Updated $page based on users match.");
+						else logger($user->data()->id,"securePage","Failed to update $page based on match, Error: ".$db->errorString());
+						$permissions=fetchPagePermissions($result->id);
+						foreach($permissions as $permission) {
+							$db->insert('permission_page_matches',['page_id' => $last,'permission_id' => $permission->permission_id]);
+							if(!$db->error()) logger($user->data()->id,"securePage","Auto-Added Permission #".$permission->permission_id." to $page.");
+							else logger($user->data()->id,"securePage","Failed ot add Permission ID#".$permission->permission_id." to $page, Error: ".$db->errorString());
+						}
+						Redirect::to($us_url_root.$page.'?msg=Page inserted and auto-mapped.');
+					}
+				}
+				Redirect::to($us_url_root.'users/admin_page.php?err=Please+confirm+permission+settings.&new=yes&id='.$last.'&dest='.$dest);
 			}else{
 			bold('<br><br>You must go into the Admin Panel and click the Manage Pages button to add this page to the database. Doing so will make this error go away.');
 			die();
@@ -989,12 +1011,19 @@ if(!function_exists('updateFields2')) {
 }
 
 if(!function_exists('hasPerm')) {
-	function hasPerm($permissions, $id) {
+	function hasPerm($permissions, $id=null) {
+		if(is_null($id)) {
+			global $user;
+			if($user->isLoggedIn()) $id=$user->data()->id;
+			else return false;
+		}
+		if($id=='') return false;
 		$db = DB::getInstance();
 		global $user;
 		global $master_account;
 		//Grant access if master user
 		$access = 0;
+		if($id==null) $id=$user->data()->id;
 
 		foreach($permissions as $permission){
 
@@ -1096,13 +1125,8 @@ if(!function_exists('stripPagePermissions')) {
 }
 
 if(!function_exists('reAuth')) {
-	function reAuth($uri,$uid,$urlRoot){
-		//Separate document name from uri
-		//$tokens = explode('/', $uri);
-		//$page = end($tokens);
-
+	function reAuth(){
 		$abs_us_root=$_SERVER['DOCUMENT_ROOT'];
-
 		$self_path=explode("/", $_SERVER['PHP_SELF']);
 		$self_path_length=count($self_path);
 		$file_found=FALSE;
@@ -1120,33 +1144,33 @@ if(!function_exists('reAuth')) {
 		}
 
 		$urlRootLength=strlen($us_url_root);
-		$page=substr($uri,$urlRootLength,strlen($uri)-$urlRootLength);
-
-		//bold($page);
-
+		$page=substr($_SERVER['PHP_SELF'],$urlRootLength,strlen($_SERVER['PHP_SELF'])-$urlRootLength);
 		$db = DB::getInstance();
 		$id = null;
-
-		//retrieve page details
 		$query = $db->query("SELECT id, page, re_auth FROM pages WHERE page = ?",[$page]);
 		$count = $query->count();
 		if ($count > 0){
-
-		$results = $query->first();
-
-		$pageDetails = array( 'id' =>$results->id, 'page' => $results->page, 're_auth' => $results->re_auth);
-		$pageID = $results->id;
-
-		//If page does not exist in DB, allow access
-		if (empty($pageDetails)){
-			return true;
-		}elseif ($pageDetails['re_auth'] == 0){//If page is public, allow access
-			return true;
-		} elseif ($page=='users/admin_verify' || $page=='usersc/admin_verify') {
-			return true;
-		}else{ //Authorization is required.  Insert your authorization code below.
-			if(!isset($_SESSION['cloak_to'])) verifyadmin($uid,$page,$urlRoot);
-		 }
+			$results = $query->first();
+			$pageDetails = array( 'id' =>$results->id, 'page' => $results->page, 're_auth' => $results->re_auth);
+			$pageID = $results->id;
+			if($_SERVER["REMOTE_ADDR"]=="127.0.0.1" || $_SERVER["REMOTE_ADDR"]=="::1" || $_SERVER["REMOTE_ADDR"]=="localhost"){
+				$local = True;
+			}else{
+				$local = False;
+			}
+			if (empty($pageDetails)){
+				return true;
+			}elseif ($pageDetails['re_auth'] == 0){//If page is public, allow access
+				return true;
+			} elseif ($page=='users/admin_verify' || $page=='usersc/admin_verify') {
+				return true;
+			} elseif ($page=='users/admin_pin.php' || $page=='usersc/admin_pin.php') {
+				return true;
+				} elseif ($local) {
+					return true;
+			} else{ //Authorization is required.  Insert your authorization code below.
+				if(!isset($_SESSION['cloak_to'])) verifyadmin($page);
+			}
 		}
 	}
 }
@@ -1159,16 +1183,22 @@ if(!function_exists('encodeURIComponent')) {
 }
 
 if(!function_exists('verifyadmin')) {
-	function verifyadmin($id,$page,$urlRoot) {
+	function verifyadmin($page) {
+		global $user;
+		global $us_url_root;
 		$actual_link = encodeURIComponent("http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]");
 		$db = DB::getInstance();
+		$settings=$db->query("SELECT * FROM settings WHERE id=1")->first();
+		$null=$settings->admin_verify_timeout-1;
 		if(isset($_SESSION['last_confirm']) && $_SESSION['last_confirm']!='' && !is_null($_SESSION['last_confirm'])) $last_confirm=$_SESSION['last_confirm'];
-		else $last_confirm=date("Y-m-d H:i:s",strtotime("-3 hours",strtotime(date("Y-m-d H:i:s"))));
+		else $last_confirm=date("Y-m-d H:i:s",strtotime('-'.$null.' day',strtotime(date("Y-m-d H:i:s"))));
 		$current=date("Y-m-d H:i:s");
 		$ctFormatted = date("Y-m-d H:i:s", strtotime($current));
-		$dbPlus = date("Y-m-d H:i:s", strtotime('+2 hours', strtotime($last_confirm)));
+		$dbPlus = date("Y-m-d H:i:s", strtotime('+'.$settings->admin_verify_timeout.' minutes', strtotime($last_confirm)));
 		if (strtotime($ctFormatted) > strtotime($dbPlus)){
-			Redirect::to($urlRoot.'users/admin_verify.php?actual_link='.$actual_link.'&page='.$page);
+			$q = $db->query("SELECT pin FROM users WHERE id = ?",[$user->data()->id]);
+			if(is_null($q->first()->pin)) Redirect::to($us_url_root.'users/admin_pin.php?actual_link='.$actual_link.'&page='.$page);
+			else Redirect::to($us_url_root.'users/admin_verify.php?actual_link='.$actual_link.'&page='.$page);
 		}
 		else
 		{
@@ -1462,7 +1492,13 @@ if(!function_exists('time2str')) {
 	            if($diff < 7200) return 'in an hour';
 	            if($diff < 86400) return 'in ' . floor($diff / 3600) . ' hours';
 	        }
-	        if($day_diff == 1) return 'Tomorrow';
+	        if($day_diff == 1) {
+						if($day_diff < 4) {
+							return date('l', $ts);
+						} else {
+							return 'Tomorrow';
+						}
+					}
 	        if($day_diff < 4) return date('l', $ts);
 	        if($day_diff < 7 + (7 - date('w'))) return 'next week';
 	        if(ceil($day_diff / 7) < 4) return 'in ' . ceil($day_diff / 7) . ' weeks';
@@ -1599,5 +1635,281 @@ if(!function_exists('lognote')) {
 			chages we make to this helper and avoids you from editing core files. */
 		}
 		else return false;
+	}
+}
+
+if(!function_exists('fetchUserFingerprints')) {
+	function fetchUserFingerprints() {
+		global $user;
+		$db = DB::getInstance();
+		$q = $db->query("SELECT *,CASE WHEN fp.kFingerprintAssetID IS NULL THEN false ELSE true END AssetsAvailable FROM us_fingerprints f LEFT JOIN us_fingerprint_assets fp ON fp.fkFingerprintID=f.kFingerprintID WHERE f.fkUserID = ? AND f.Fingerprint_Expiry > NOW() AND fp.IP_Address = ?",[$user->data()->id,ipCheck()]);
+		if($q->count()>0) return $q->results();
+		else return false;
+	}
+}
+
+if(!function_exists('expireFingerprints')) {
+	function expireFingerprints($fingerprints) {
+		global $user;
+		$db = DB::getInstance();
+		$i=0;
+		foreach($fingerprints as $fingerprint) {
+			$db->query("UPDATE us_fingerprints SET Fingerprint_Expiry=NOW() WHERE kFingerprintID = ? AND fkUserId = ?",[$fingerprint,$user->data()->id]);
+			if(!$db->error()) {
+				$i++;
+				logger($user->data()->id,"Two FA","Expired Fingerprint ID#$fingerprint");
+			} else {
+				$error=$db->errorString();
+				logger($user->data()->id,"Two FA","Error expiring Fingerprint ID#$fingerprint: $error");
+			}
+		}
+		if($i>0) return $i;
+		else return false;
+	}
+}
+
+if(!function_exists('getOS')) {
+	function getOS() {
+
+	    global $user_agent;
+
+	    $os_platform  = "Unknown OS Platform";
+
+	    $os_array     = array(
+	                          '/windows nt 10/i'      =>  'Windows 10',
+	                          '/windows nt 6.3/i'     =>  'Windows 8.1',
+	                          '/windows nt 6.2/i'     =>  'Windows 8',
+	                          '/windows nt 6.1/i'     =>  'Windows 7',
+	                          '/windows nt 6.0/i'     =>  'Windows Vista',
+	                          '/windows nt 5.2/i'     =>  'Windows Server 2003/XP x64',
+	                          '/windows nt 5.1/i'     =>  'Windows XP',
+	                          '/windows xp/i'         =>  'Windows XP',
+	                          '/windows nt 5.0/i'     =>  'Windows 2000',
+	                          '/windows me/i'         =>  'Windows ME',
+	                          '/win98/i'              =>  'Windows 98',
+	                          '/win95/i'              =>  'Windows 95',
+	                          '/win16/i'              =>  'Windows 3.11',
+	                          '/macintosh|mac os x/i' =>  'Mac OS X',
+	                          '/mac_powerpc/i'        =>  'Mac OS 9',
+	                          '/linux/i'              =>  'Linux',
+	                          '/ubuntu/i'             =>  'Ubuntu',
+	                          '/iphone/i'             =>  'iPhone',
+	                          '/ipod/i'               =>  'iPod',
+	                          '/ipad/i'               =>  'iPad',
+	                          '/android/i'            =>  'Android',
+	                          '/blackberry/i'         =>  'BlackBerry',
+	                          '/webos/i'              =>  'Mobile'
+	                    );
+
+	    foreach ($os_array as $regex => $value)
+	        if (preg_match($regex, $user_agent))
+	            $os_platform = $value;
+
+	    return $os_platform;
+	}
+}
+
+if(!function_exists('getBrowser')) {
+	function getBrowser() {
+
+	    global $user_agent;
+
+	    $browser        = "Unknown Browser";
+
+	    $browser_array = array(
+	                            '/msie/i'      => 'Internet Explorer',
+	                            '/firefox/i'   => 'Firefox',
+	                            '/safari/i'    => 'Safari',
+	                            '/chrome/i'    => 'Chrome',
+	                            '/edge/i'      => 'Edge',
+	                            '/opera/i'     => 'Opera',
+	                            '/netscape/i'  => 'Netscape',
+	                            '/maxthon/i'   => 'Maxthon',
+	                            '/konqueror/i' => 'Konqueror',
+	                            '/mobile/i'    => 'Handheld Browser'
+	                     );
+
+	    foreach ($browser_array as $regex => $value)
+	        if (preg_match($regex, $user_agent))
+	            $browser = $value;
+
+	    return $browser;
+	}
+}
+
+if(!function_exists('isAdmin')) {
+	function isAdmin() {
+		global $user;
+		if(($user->isLoggedIn() && hasPerm([2],$user->data()->id)) || (isset($_SESSION['cloak_from']) && hasPerm([2],$_SESSION['cloak_from']))){
+			return true;
+		} else {
+			return false;
+		}
+	}
+}
+
+if(!function_exists('isLocalhost')) {
+	function isLocalhost() {
+		if($_SERVER["REMOTE_ADDR"]=="127.0.0.1" || $_SERVER["REMOTE_ADDR"]=="::1" || $_SERVER["REMOTE_ADDR"]=="localhost"){
+		  return true;
+		}else{
+		  return false;
+		}
+	}
+}
+
+if(!function_exists('currentPageStrict')) {
+	function currentPageStrict() {
+		$uri=$_SERVER['PHP_SELF'];
+		$abs_us_root=$_SERVER['DOCUMENT_ROOT'];
+
+		$self_path=explode("/", $_SERVER['PHP_SELF']);
+		$self_path_length=count($self_path);
+		$file_found=FALSE;
+
+		for($i = 1; $i < $self_path_length; $i++){
+			array_splice($self_path, $self_path_length-$i, $i);
+			$us_url_root=implode("/",$self_path)."/";
+
+			if (file_exists($abs_us_root.$us_url_root.'z_us_root.php')){
+				$file_found=TRUE;
+				break;
+			}else{
+				$file_found=FALSE;
+			}
+		}
+
+		$urlRootLength=strlen($us_url_root);
+		$page=substr($uri,$urlRootLength,strlen($uri)-$urlRootLength);
+		return $page;
+	}
+}
+
+if(!function_exists('storeUser')) {
+	function storeUser($api=false) {
+		global $user;
+		global $us_url_root;
+		if(!$user->isLoggedIn()) return false;
+		$db=DB::getInstance();
+		if(isset($_SESSION['kUserSessionID']) && isset($_SESSION['fingerprint']) && $_SESSION['fingerprint']!='') $q=$db->query("SELECT * FROM us_user_sessions WHERE kUserSessionID = ? AND fkUserID = ? AND UserFingerprint = ?",[$_SESSION['kUserSessionID'],$user->data()->id,$_SESSION['fingerprint']]);
+		if(isset($q) && $q->count()==1) {
+			$result=$q->first();
+			if($result->UserSessionEnded==0) {
+				if(!$api) {
+					$db->update('us_user_sessions',['kUserSessionID' => $result->kUserSessionID],['UserSessionLastUsed' => date("Y-m-d H:i:s"),'UserSessionLastPage' => currentPageStrict()]);
+					if($db->error()) {
+						logger($user->data()->id,"User Tracker","Failed to re-track User Session, Error: ".$db->errorString());
+						return false;
+					} else return true;
+				} else return true;
+			} else {
+				if($api) return false;
+					$user->logout();
+					Redirect::to($us_url_root.'users/?msg=Your session was ended remotely');
+			}
+		} else {
+			if(isset($_SESSION['fingerprint']) && $_SESSION['fingerprint']!='') {
+				$fields = [
+					'fkUserID' => $user->data()->id,
+					'UserFingerprint' => $_SESSION['fingerprint'],
+					'UserSessionIP' => ipCheck(),
+					'UserSessionOS' => getOS(),
+					'UserSessionBrowser' => getBrowser(),
+					'UserSessionStarted' => date("Y-m-d H:i:s"),
+					'UserSessionLastUsed' => date("Y-m-d H:i:s"),
+					'UserSessionLastPage' => currentPageStrict(),
+					'UserSessionEnded' => 0,
+					'UserSessionEnded_Time' => NULL,
+				];
+				$db->insert('us_user_sessions',$fields);
+				if($db->error()) {
+					logger($user->data()->id,"User Tracker","Failed to track User Session, Error: ".$db->errorString());
+					return false;
+				} else {
+					$_SESSION['kUserSessionID']=$db->lastId();
+					return true;
+				}
+			}
+		}
+	}
+}
+
+if(!function_exists('UserSessionCount')) {
+	function UserSessionCount() {
+		global $user;
+		$db=DB::getInstance();
+		$q=$db->query("SELECT * FROM us_user_sessions WHERE fkUserID = ? AND UserSessionEnded=0",[$user->data()->id]);
+		return $q->count();
+	}
+}
+
+if(!function_exists('fetchUserSessions')) {
+	function fetchUserSessions($all=false) {
+		global $user;
+		$db = DB::getInstance();
+		if(!$all) $q = $db->query("SELECT * FROM us_user_sessions WHERE fkUserID = ? AND UserSessionEnded=0 ORDER BY UserSessionStarted",[$user->data()->id]);
+		else $q = $db->query("SELECT * FROM us_user_sessions WHERE fkUserID = ? ORDER BY UserSessionStarted",[$user->data()->id]);
+		if($q->count()>0) return $q->results();
+		else return false;
+	}
+}
+
+if(!function_exists('fetchAdminSessions')) {
+	function fetchAdminSessions($all=false) {
+		global $user;
+		$db = DB::getInstance();
+		if(!$all) $q = $db->query("SELECT * FROM us_user_sessions WHERE UserSessionEnded=0 ORDER BY UserSessionStarted");
+		else $q = $db->query("SELECT * FROM us_user_sessions ORDER BY UserSessionStarted");
+		if($q->count()>0) return $q->results();
+		else return false;
+	}
+}
+
+if(!function_exists('killSessions')) {
+	function killSessions($sessions,$admin=false) {
+		global $user;
+		$db = DB::getInstance();
+		$i=0;
+		foreach($sessions as $session) {
+			if(!$admin) $db->query("UPDATE us_user_sessions SET UserSessionEnded=1,UserSessionEnded_Time=NOW() WHERE kUserSessionID = ? AND fkUserId = ?",[$session,$user->data()->id]);
+			else $db->query("UPDATE us_user_sessions SET UserSessionEnded=1,UserSessionEnded_Time=NOW() WHERE kUserSessionID = ?",[$session]);
+			if(!$db->error()) {
+				$i++;
+				logger($user->data()->id,"User Tracker","Killed Session ID#$session");
+			} else {
+				$error=$db->errorString();
+				logger($user->data()->id,"User Tracker","Error killing Session ID#$session: $error");
+			}
+		}
+		if($i>0) return $i;
+		else return false;
+	}
+}
+
+if(!function_exists('passwordResetKillSessions')) {
+	function passwordResetKillSessions($uid=NULL) {
+		global $user;
+		$db = DB::getInstance();
+		if(is_null($uid)) $q = $db->query("UPDATE us_user_sessions SET UserSessionEnded=1,UserSessionEnded_Time=NOW() WHERE fkUserID = ? AND UserSessionEnded=0 AND kUserSessionID <> ?",[$user->data()->id,$_SESSION['kUserSessionID']]);
+		else $q = $db->query("UPDATE us_user_sessions SET UserSessionEnded=1,UserSessionEnded_Time=NOW() WHERE fkUserID = ? AND UserSessionEnded=0",[$uid]);
+		if(!$db->error()) {
+			$count=$db->count();
+			if(is_null($uid)) {
+				if($count==1) logger($user->data()->id,"User Tracker","Killed 1 Session via Password Reset.");
+				if($count >1) logger($user->data()->id,"User Tracker","Killed $count Sessions via Password Reset.");
+			} else {
+				if($count==1) logger($user->data()->id,"User Tracker","Killed 1 Session via Password Reset for UID $uid.");
+				if($count >1) logger($user->data()->id,"User Tracker","Killed $count Sessions via Password Reset for UID $uid.");
+			}
+			return $count;
+		} else {
+			$error=$db->errorString();
+			if(is_null($uid)) {
+					logger($user->data()->id,"User Tracker","Password Reset Session Kill failed, Error: ".$error);
+			} else {
+				logger($user->data()->id,"User Tracker","Password Reset Session Kill failed for UID $uid, Error: ".$error);
+			}
+			return $error;
+		}
 	}
 }
